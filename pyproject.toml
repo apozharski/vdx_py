@@ -2,7 +2,8 @@
 requires = ["setuptools >= 61.0"]
 build-backend = "setuptools.build_meta"
 [project]
-name = "vdx"
+name = "vdx_py"
+description = "Python package for index tracking in CasADi "
 license = {file = "LICENCE.TXT"}
 readme = "README.md"
 version = "0.1.0"
@@ -11,4 +12,8 @@ authors = [
 ]
 maintainers = [
   {name = "Anton E. Pozharskiy", email = "anton.pozharskiy@imtek.uni-freiburg.de"}
+]
+dependencies = [
+    "casadi",
+    "numpy"
 ]
