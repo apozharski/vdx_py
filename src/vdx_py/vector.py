@@ -25,8 +25,8 @@ class Primal:
 @dataclass
 class Constraint:
     sym : Any
-    lb : Any = -np.inf
-    ub : Any = np.inf
+    lb : Any = 0.0
+    ub : Any = 0.0
     init_mult : Any = 0.0
 
     def __post_init__(self):
@@ -104,6 +104,7 @@ class ConstraintVector(Vector):
         self.init_mult = np.array([])
 
         # Results
+        self.val = np.array([])
         self.mult = np.array([])
 
     def add_var(self, value):
@@ -115,6 +116,7 @@ class ConstraintVector(Vector):
         self.lb = np.append(self.lb, value.lb)
         self.ub = np.append(self.ub, value.ub)
         self.init_mult = np.append(self.init_mult, value.init_mult)
+        self.val = np.append(self.mult, 0.0*value.init_mult)
         self.mult = np.append(self.mult, value.init_mult)
         indices = range(self.nelem, self.nelem + len(value))
         self.nelem += len(value)
