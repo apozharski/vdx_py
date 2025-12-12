@@ -3,6 +3,7 @@ import numpy as np
 from .variable import Variable
 from dataclasses import dataclass
 from typing import Any
+from termcolor import colored
 
 @dataclass
 class Primal:
@@ -121,6 +122,13 @@ class ConstraintVector(Vector):
         indices = range(self.nelem, self.nelem + len(value))
         self.nelem += len(value)
         return indices
+
+    def print_result(self, tol=1e-6, only_viol=False):
+        for ii in range(self.nelem):
+            if self.val[ii] < self.lb[ii]-tol or self.val[ii] > self.ub[ii] + tol:
+                print(colored(f"{ii}: {self.lb[ii]:.6f}  {self.val[ii]:.6f}  {self.ub[ii]:.6f}", "red"))
+            elif not only_viol:
+                print(f"{ii}: {self.lb[ii]:.6f}  {self.val[ii]:.6f}  {self.ub[ii]:.6f}")
 
 class ParameterVector(Vector):
     def __init__(self, symbolic_type=ca.SX):

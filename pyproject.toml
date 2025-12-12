@@ -15,5 +15,7 @@ maintainers = [
 ]
 dependencies = [
     "casadi",
-    "numpy"
+    "numpy",
+    "sortedcontainers",
+    "termcolor"
 ]

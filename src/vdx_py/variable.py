@@ -16,7 +16,10 @@ class IndexResult:
         return ca.horzcat(*[self.vector.sym[idx] for idx in self.indices])
 
     def __getattr__(self, name):
-        return np.squeeze(np.vstack([self.vector.__getattribute__(name)[idx] for idx in self.indices]))
+        if name == "sym":
+            return self.getsym()
+        else:
+            return np.squeeze(np.vstack([self.vector.__getattribute__(name)[idx] for idx in self.indices]))
 
     def __call__(self, **kwargs):
         if not kwargs:
