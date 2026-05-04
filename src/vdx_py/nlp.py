@@ -38,3 +38,14 @@ class NLP:
         self.g.mult = np.squeeze(nlp_results['lam_g'])
         self.p.mult = np.squeeze(nlp_results['lam_p'])
         self.f_result = nlp_results['f']
+
+    def __str__(self):
+        ret = ("NLP with Objective:\n"
+               f"{self.f}\n"
+               f"Variables:\n"
+               f"{str(self.w)}\n"
+               f"Parameters:\n"
+               f"{str(self.p)}\n"
+               f"Constraints:\n"
+               f"{str(self.g)}\n")
+        return ret

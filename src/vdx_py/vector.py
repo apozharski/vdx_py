@@ -96,6 +96,26 @@ class PrimalVector(Vector):
         self.nelem += len(value)
         return indices
 
+    def __str__(self):
+        lines = []
+        max_len = 16 # some minimum length
+        for ii in range(self.nelem):
+            sym_str = str(self.sym[ii])
+            max_len = max(max_len, len(sym_str))
+            lines.append((sym_str,
+                          self.lb[ii],
+                          self.ub[ii],
+                          self.init[ii],
+                          self.init_mult[ii],
+                          self.res[ii],
+                          self.mult[ii]))
+
+        ret = f"|{'sym':{max_len}}|{'lb':12}|{'ub':12}|{'init':12}|{'init_mult':12}|{'res':12}|{'mult':12}|\n"
+        for sym,lb,ub,init,init_mult,res,mult in lines:
+            ret += f"|{sym:{max_len}}|{lb:<12.4g}|{ub:<12.4g}|{init:<12.4g}|{init_mult:<12.4g}|{res:<12.4g}|{mult:<12.4g}|\n"
+
+        return ret
+
 
 class ConstraintVector(Vector):
     def __init__(self, symbolic_type=ca.SX):
@@ -123,6 +143,25 @@ class ConstraintVector(Vector):
         self.nelem += len(value)
         return indices
 
+    def __str__(self):
+        lines = []
+        max_len = 16 # some minimum length
+        for ii in range(self.nelem):
+            sym_str = str(self.sym[ii])
+            max_len = max(max_len, len(sym_str))
+            lines.append((sym_str,
+                          self.lb[ii],
+                          self.ub[ii],
+                          self.init_mult[ii],
+                          self.val[ii],
+                          self.mult[ii]))
+
+        ret = f"|{'sym':{max_len}}|{'lb':12}|{'ub':12}|{'init_mult':12}|{'val':12}|{'mult':12}|\n"
+        for sym,lb,ub,init_mult,res,mult in lines:
+            ret += f"|{sym:{max_len}}|{lb:<12.4g}|{ub:<12.4g}|{init_mult:<12.4g}|{res:<12.4g}|{mult:<12.4g}|\n"
+
+        return ret
+
     def print_result(self, tol=1e-6, only_viol=False):
         for ii in range(self.nelem):
             if self.val[ii] < self.lb[ii]-tol or self.val[ii] > self.ub[ii] + tol:
@@ -145,3 +184,17 @@ class ParameterVector(Vector):
         indices = range(self.nelem, self.nelem + len(value))
         self.nelem += len(value)
         return indices
+
+    def __str__(self):
+        lines = []
+        max_len = 16 # some minimum length
+        for ii in range(self.nelem):
+            sym_str = str(self.sym[ii])
+            max_len = max(max_len, len(sym_str))
+            lines.append((sym_str, self.val[ii]))
+
+        ret = f"|{'sym':{max_len}}|{'val':12}|\n"
+        for sym,val in lines:
+            ret += f"|{sym:{max_len}}|{val:<12.4g}|\n"
+
+        return ret
