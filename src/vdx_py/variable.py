@@ -1,8 +1,13 @@
+from collections.abc import Iterable
+from dataclasses import replace
+from itertools import islice, product
+from sortedcontainers import SortedSet
+
+from casadi import _casadi
 import casadi as ca
 import numpy as np
-from casadi import _casadi
-from sortedcontainers import SortedSet
-from itertools import islice
+
+from .vartypes import *
 
 class IndexResult:
     __initialized = False
@@ -131,6 +136,21 @@ class Variable:
         if not isinstance(key, tuple):
             raise KeyError("Argument to variable index must be a tuple or integer")
 
+        if isinstance(key, int) or key == ():
+            self._add_scalar(key, value)
+        elif all([isinstance(key_i, int) for key_i in key]):
+            self._add_scalar(key, value)
+        else: #Must be a tuple of iterables
+            # TODO(@anton) rename Primal and parameter
+            key_iters = [k if isinstance(k,Iterable) else [k] for k in key]
+            for key_i in product(*key_iters):
+                self._add_scalar(key_i, self._rename_variable(key_i, value))
+
+
+    def _rename_variable(self, key_i, value: Primal|Parameter):
+        return replace(value, name=value.name+"_"+"_".join(str(k) for k in key_i))
+
+    def _add_scalar(self, key: int, value):
         indices = self.vector.add_var(value)
         self._update_range(key)
         self.ind_map[key] = indices
