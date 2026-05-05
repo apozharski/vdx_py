@@ -33,6 +33,9 @@ class IndexResult:
             self.vector.__getattribute__(name)[self.indices] = val
     def __getitem__(self, key): return self.getsym()[key]
 
+    def size(self, axis):
+        return self.getsym().size(axis)
+
     def __matmul__(self, y): return _casadi.mtimes(self.getsym(), y.getsym()) if isinstance(y, IndexResult) else _casadi.mtimes(self.getsym(), y)
     def __rmatmul__(self, y): return _casadi.mtimes(y.getsym(), self.getsym()) if isinstance(y, IndexResult) else _casadi.mtimes(y, self.getsym())
 
