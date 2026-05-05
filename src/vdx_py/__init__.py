@@ -1,4 +1,5 @@
 from casadi import Function
+import casadi
 from .variable import IndexResult
 
 _original_Function_call = Function.call
@@ -12,3 +13,10 @@ def _patched_Function_call(self, args):
     return _original_Function_call(self, new_args)
 
 Function.call = _patched_Function_call
+
+_original_vertcat = casadi.vertcat
+def _patched_vertcat(*args):
+    new_args = tuple([arg.getsym() if isinstance(arg, IndexResult) else arg for arg in args])
+    return _original_vertcat(*new_args)
+
+casadi.vertcat = _patched_vertcat

@@ -185,7 +185,6 @@ class Variable:
                 continue
             worklist=[()]
             for (i,(k_key,k_ind)) in enumerate(zip(key,ind)):
-                print("key=",key, " worklist=", worklist, " k_key=", k_key, " ind=",ind, " inds=",inds)
                 found = False
                 new_worklist = []
                 for prefix in worklist:
