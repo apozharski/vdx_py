@@ -133,8 +133,10 @@ class Variable:
     def __setitem__(self, key, value):
         if isinstance(key, int):
             key = (key,)
+        elif isinstance(key, Iterable) and not isinstance(key, tuple):
+            key = (key,)
         if not isinstance(key, tuple):
-            raise KeyError("Argument to variable index must be a tuple or integer")
+            raise KeyError("Argument to variable index must be a tuple[Iterable], integer, or iterable")
 
         if isinstance(key, int) or key == ():
             self._add_scalar(key, value)
@@ -183,6 +185,7 @@ class Variable:
                 continue
             worklist=[()]
             for (i,(k_key,k_ind)) in enumerate(zip(key,ind)):
+                print("key=",key, " worklist=", worklist, " k_key=", k_key, " ind=",ind, " inds=",inds)
                 found = False
                 new_worklist = []
                 for prefix in worklist:
@@ -191,6 +194,11 @@ class Variable:
                         kmin,kmax = r[0],r[-1]
                         s_key = SortedSet(islice(range(kmin,kmax+1),k_key.start,k_key.stop,k_key.step)).intersection(r)
                         if k_ind in s_key:
+                            new_worklist.append(prefix+(k_ind,))
+                            found = True
+                            break
+                    if isinstance(k_key, Iterable): # list, tuple, range, etc
+                        if k_ind in k_key:
                             new_worklist.append(prefix+(k_ind,))
                             found = True
                             break
@@ -203,8 +211,6 @@ class Variable:
                 if not found:
                     still_valid=False
                     break
-                    
-                        
             if still_valid:
                 inds.append(ind)
         return inds
