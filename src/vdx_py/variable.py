@@ -201,9 +201,7 @@ class Variable:
                 for prefix in worklist:
                     if isinstance(k_key,slice):
                         r = self.ranges[prefix]
-                        print(r)
                         kmin,kmax = r[0],r[-1]
-                        print(kmin,kmax)
                         s_key = self._get_indset_from_slice(kmin,kmax,k_key).intersection(r)
                         if k_ind in s_key:
                             new_worklist.append(prefix+(k_ind,))
@@ -225,5 +223,4 @@ class Variable:
                     break
             if still_valid:
                 inds.append(ind)
-        print(inds)
         return inds
