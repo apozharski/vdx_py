@@ -174,7 +174,15 @@ class Variable:
                 self.ranges[k].add(key[i+1])
             else:
                 self.ranges[k] = SortedSet([key[i+1]])
-            
+
+    def _get_indset_from_slice(self, kmin: int, kmax: int, s: slice):
+        kstart = max(s.start,kmin)
+        kend = min(s.stop,kmax+1)
+        if s.step is None:
+            return SortedSet(range(kstart,kend))
+        else:
+            return SortedSet(range(kstart,kend,s.step))
+
     def _get_ind_list(self, key):
         inds = []
         if key == ():
@@ -193,8 +201,10 @@ class Variable:
                 for prefix in worklist:
                     if isinstance(k_key,slice):
                         r = self.ranges[prefix]
+                        print(r)
                         kmin,kmax = r[0],r[-1]
-                        s_key = SortedSet(islice(range(kmin,kmax+1),k_key.start,k_key.stop,k_key.step)).intersection(r)
+                        print(kmin,kmax)
+                        s_key = self._get_indset_from_slice(kmin,kmax,k_key).intersection(r)
                         if k_ind in s_key:
                             new_worklist.append(prefix+(k_ind,))
                             found = True
@@ -215,5 +225,5 @@ class Variable:
                     break
             if still_valid:
                 inds.append(ind)
+        print(inds)
         return inds
-            

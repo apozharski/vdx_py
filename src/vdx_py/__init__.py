@@ -1,7 +1,10 @@
 from casadi import Function
 import casadi
 from .variable import IndexResult
+from .nlp import NLP
+from .vartypes import Primal, Parameter, Constraint
 
+# CasADi Patches
 _original_Function_call = Function.call
 def _patched_Function_call(self, args):
     # somewhat slow maybe?
