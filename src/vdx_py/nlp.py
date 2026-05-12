@@ -38,6 +38,7 @@ class NLP:
         self.g.mult = np.squeeze(nlp_results['lam_g'])
         self.p.mult = np.squeeze(nlp_results['lam_p'])
         self.f_result = nlp_results['f']
+        return self.solver.stats()
 
     def __str__(self):
         ret = ("NLP with Objective:\n"
