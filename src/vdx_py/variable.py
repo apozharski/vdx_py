@@ -176,8 +176,8 @@ class Variable:
                 self.ranges[k] = SortedSet([key[i+1]])
 
     def _get_indset_from_slice(self, kmin: int, kmax: int, s: slice):
-        kstart = max(s.start,kmin)
-        kend = min(s.stop,kmax+1)
+        kstart = max(s.start,kmin) if s.start is not None else kmin
+        kend = min(s.stop,kmax+1) if s.stop is not None else kmax+1
         if s.step is None:
             return SortedSet(range(kstart,kend))
         else:
