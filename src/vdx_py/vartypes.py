@@ -38,6 +38,10 @@ class Constraint:
         return self.sym.size()[0]
 
 @dataclass
+class CConstraint(Constraint):
+    ub: Any = np.inf
+
+@dataclass
 class Parameter:
     name : str
     size : int = 1

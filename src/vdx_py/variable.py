@@ -33,8 +33,11 @@ class IndexResult:
             self.vector.__getattribute__(name)[self.indices] = val
     def __getitem__(self, key): return self.getsym()[key]
 
-    def size(self, axis):
-        return self.getsym().size(axis)
+    def size(self, axis=None):
+        if axis is None:
+            return self.getsym().size()
+        else:
+            return self.getsym().size(axis)
 
     def __matmul__(self, y): return _casadi.mtimes(self.getsym(), y.getsym()) if isinstance(y, IndexResult) else _casadi.mtimes(self.getsym(), y)
     def __rmatmul__(self, y): return _casadi.mtimes(y.getsym(), self.getsym()) if isinstance(y, IndexResult) else _casadi.mtimes(y, self.getsym())
@@ -114,14 +117,17 @@ class IndexRange():
     def __init__(self, tup):
         self.ind = tup
 
-
-        
-
 class Variable:
     def __init__(self,vector):
         self.vector = vector
         self.ind_map = dict() # tuples to lists of indices
         self.ranges = dict()
+
+    def __copy__(self):
+        cls = self.__class__
+        result = cls.__new__(cls)
+        result.__dict__.update(self.__dict__)
+        return result
 
     def __getitem__(self, key):
         if isinstance(key, int) or isinstance(key,slice):
@@ -150,7 +156,6 @@ class Variable:
             key_iters = [k if isinstance(k,Iterable) else [k] for k in key]
             for key_i in product(*key_iters):
                 self._add_scalar(key_i, self._rename_variable(key_i, value))
-
 
     def _rename_variable(self, key_i, value: Primal|Parameter):
         return replace(value, name=value.name+"_"+"_".join(str(k) for k in key_i))

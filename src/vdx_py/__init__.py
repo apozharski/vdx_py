@@ -2,6 +2,7 @@ from casadi import Function
 import casadi
 from .variable import IndexResult
 from .nlp import NLP
+from .mpcc import MPCC
 from .vartypes import Primal, Parameter, Constraint
 
 # CasADi Patches

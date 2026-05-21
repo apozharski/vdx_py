@@ -1,5 +1,8 @@
+from copy import copy
+
 import casadi as ca
 import numpy as np
+
 from .vartypes import *
 from .variable import Variable
 from dataclasses import dataclass
@@ -22,6 +25,17 @@ class Vector:
             self.variables[name] = var
 
         return self.variables[name]
+
+    def __copy__(self):
+        """
+        Always deepcopy the vector, this is sufficient to get a copy of an NLP
+        """
+        cls = self.__class__
+        result = cls.__new__(cls)
+        result.__dict__.update(self.__dict__)
+        for name, var in result.variables.items():
+            result.variables[name] = copy(var)
+        return result
 
 class PrimalVector(Vector):
     def __init__(self, symbolic_type=ca.SX):
