@@ -24,3 +24,11 @@ def _patched_vertcat(*args):
     return _original_vertcat(*new_args)
 
 casadi.vertcat = _patched_vertcat
+
+
+_original_sum2 = casadi.sum2
+def _patched_sum2(*args):
+    new_args = tuple([arg.getsym() if isinstance(arg, IndexResult) else arg for arg in args])
+    return _original_sum2(*new_args)
+
+casadi.sum2 = _patched_sum2

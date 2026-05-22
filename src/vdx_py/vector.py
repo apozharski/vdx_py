@@ -25,7 +25,8 @@ class Vector:
             self.variables[name] = var
 
         return self.variables[name]
-
+    def __len__(self):
+        return self.sym.size(1)
     def __copy__(self):
         """
         Always deepcopy the vector, this is sufficient to get a copy of an NLP
