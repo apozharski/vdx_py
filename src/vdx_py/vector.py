@@ -36,6 +36,7 @@ class Vector:
         result.__dict__.update(self.__dict__)
         for name, var in result.variables.items():
             result.variables[name] = copy(var)
+            result.variables[name].vector = result
         return result
 
 class PrimalVector(Vector):
