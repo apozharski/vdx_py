@@ -1,5 +1,6 @@
 from collections.abc import Iterable
 from dataclasses import replace
+from functools import reduce
 from itertools import islice, product
 from sortedcontainers import SortedSet
 
@@ -128,6 +129,9 @@ class Variable:
         result = cls.__new__(cls)
         result.__dict__.update(self.__dict__)
         return result
+
+    def get_depth(self):
+        return reduce(lambda x,y: max(x,len(y)), self.ind_map.keys(), 0)
 
     def __getitem__(self, key):
         if isinstance(key, int) or isinstance(key,slice):
