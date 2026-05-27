@@ -34,9 +34,10 @@ class Vector:
         cls = self.__class__
         result = cls.__new__(cls)
         result.__dict__.update(self.__dict__)
-        for name, var in result.variables.items():
-            result.variables[name] = copy(var)
-            result.variables[name].vector = result
+        new_variables = {name: copy(var) for name, var in result.variables.items()}
+        result.__dict__["variables"] = new_variables
+        for var in new_variables.values():
+            var.vector = result
         return result
 
 class PrimalVector(Vector):
