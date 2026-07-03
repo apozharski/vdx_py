@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 from dataclasses import replace
 from functools import reduce
-from itertools import islice, product
+from itertools import count, islice, product
 from sortedcontainers import SortedSet
 
 from casadi import _casadi
@@ -119,10 +119,12 @@ class IndexRange():
         self.ind = tup
 
 class Variable:
+    _age = count(0)
     def __init__(self,vector):
         self.vector = vector
         self.ind_map = dict() # tuples to lists of indices
         self.ranges = dict()
+        self.age = next(self._age)
 
     def __copy__(self):
         cls = self.__class__
@@ -233,3 +235,11 @@ class Variable:
             if still_valid:
                 inds.append(ind)
         return inds
+
+    def _is_valid_operand(self, other):
+        return isinstance(other, Variable)
+
+    def __lt__(self, other):
+        if not self._is_valid_operand(other):
+            return NotImplemented
+        return self.age < other.age

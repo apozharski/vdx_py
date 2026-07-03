@@ -1,4 +1,6 @@
 from copy import copy
+from itertools import chain
+from operator import itemgetter
 
 import casadi as ca
 import numpy as np
@@ -39,6 +41,19 @@ class Vector:
         for var in new_variables.values():
             var.vector = result
         return result
+
+    def resort_vector(self):
+        idxlst = [((tup,var), varname, ind) for varname,var in self.variables.items() for tup,ind in var.ind_map.items()]
+        new_idxlst = sorted(idxlst, key=itemgetter(0))
+        reorder = list(chain(ind for _,_,ind in new_idxlst))
+        start = 0
+        for ((tup,var), _,ind) in new_idxlst:
+            n = len(ind)
+            var.ind_map[tup] = range(start, start+n)
+            start += n
+
+        return new_idxlst,reorder
+
 
 class PrimalVector(Vector):
     def __init__(self, symbolic_type=ca.SX):
@@ -88,6 +103,16 @@ class PrimalVector(Vector):
             ret += f"|{sym:{max_len}}|{lb:<12.4g}|{ub:<12.4g}|{init:<12.4g}|{init_mult:<12.4g}|{res:<12.4g}|{mult:<12.4g}|\n"
 
         return ret
+
+    def resort_vector(self):
+        new_idxlst, reorder = super().resort_vector() # Get new ordering
+        self.sym = ca.vertcat(*[self.sym[idx] for idx in reorder])
+        self.lb = np.hstack([self.lb[idx] for idx in reorder])
+        self.ub = np.hstack([self.ub[idx] for idx in reorder])
+        self.init = np.hstack([self.init[idx] for idx in reorder])
+        self.init_mult = np.hstack([self.init_mult[idx] for idx in reorder])
+        self.res = np.hstack([self.res[idx] for idx in reorder])
+        self.mult = np.hstack([self.mult[idx] for idx in reorder])
 
 
 class ConstraintVector(Vector):
@@ -142,6 +167,15 @@ class ConstraintVector(Vector):
             elif not only_viol:
                 print(f"{ii}: {self.lb[ii]:.6f}  {self.val[ii]:.6f}  {self.ub[ii]:.6f}")
 
+    def resort_vector(self):
+        new_idxlst, reorder = super().resort_vector() # Get new ordering
+        self.sym = ca.vertcat(*[self.sym[idx] for idx in reorder])
+        self.lb = np.hstack([self.lb[idx] for idx in reorder])
+        self.ub = np.hstack([self.ub[idx] for idx in reorder])
+        self.init_mult = np.hstack([self.init_mult[idx] for idx in reorder])
+        self.val = np.hstack([self.val[idx] for idx in reorder])
+        self.mult = np.hstack([self.mult[idx] for idx in reorder])
+
 class ParameterVector(Vector):
     def __init__(self, symbolic_type=ca.SX):
         super().__init__(symbolic_type=symbolic_type)
@@ -171,3 +205,13 @@ class ParameterVector(Vector):
             ret += f"|{sym:{max_len}}|{val:<12.4g}|\n"
 
         return ret
+
+    def resort_vector(self):
+        new_idxlst, reorder = super().resort_vector() # Get new ordering
+        self.sym = ca.vertcat(*[self.sym[idx] for idx in reorder])
+        self.lb = np.hstack([self.lb[idx] for idx in reorder])
+        self.ub = np.hstack([self.ub[idx] for idx in reorder])
+        self.init = np.hstack([self.init[idx] for idx in reorder])
+        self.init_mult = np.hstack([self.init_mult[idx] for idx in reorder])
+        self.res = np.hstack([self.res[idx] for idx in reorder])
+        self.mult = np.hstack([self.mult[idx] for idx in reorder])
