@@ -1,4 +1,4 @@
-from copy import copy
+from copy import copy, deepcopy
 from itertools import chain
 from operator import itemgetter
 
@@ -36,7 +36,7 @@ class Vector:
         cls = self.__class__
         result = cls.__new__(cls)
         result.__dict__.update(self.__dict__)
-        new_variables = {name: copy(var) for name, var in result.variables.items()}
+        new_variables = {name: deepcopy(var) for name, var in result.variables.items()}
         result.__dict__["variables"] = new_variables
         for var in new_variables.values():
             var.vector = result
@@ -47,12 +47,16 @@ class Vector:
         new_idxlst = sorted(idxlst, key=itemgetter(0))
         reorder = list(chain(ind for _,_,ind in new_idxlst))
         start = 0
+        ind_map = [0]*self.nelem
+        rev_ind_map = [0]*self.nelem
         for ((tup,var), _,ind) in new_idxlst:
             n = len(ind)
+            for ii,jj in zip(var.ind_map[tup],range(start, start+n)):
+                ind_map[ii] = jj
+                rev_ind_map[jj] = ii
             var.ind_map[tup] = range(start, start+n)
             start += n
-
-        return new_idxlst,reorder
+        return new_idxlst,reorder,ind_map,rev_ind_map
 
 
 class PrimalVector(Vector):
@@ -84,6 +88,17 @@ class PrimalVector(Vector):
         self.nelem += len(value)
         return indices
 
+    def __copy__(self):
+        result = super().__copy__()
+        result.sym = copy(self.sym)
+        result.lb = copy(self.lb)
+        result.ub = copy(self.ub)
+        result.init = copy(self.init)
+        result.init_mult = copy(self.init_mult)
+        result.res = copy(self.res)
+        result.mult = copy(self.mult)
+        return result
+
     def __str__(self):
         lines = []
         max_len = 16 # some minimum length
@@ -105,7 +120,7 @@ class PrimalVector(Vector):
         return ret
 
     def resort_vector(self):
-        new_idxlst, reorder = super().resort_vector() # Get new ordering
+        new_idxlst, reorder, ind_map, rev_ind_map = super().resort_vector() # Get new ordering
         self.sym = ca.vertcat(*[self.sym[idx] for idx in reorder])
         self.lb = np.hstack([self.lb[idx] for idx in reorder])
         self.ub = np.hstack([self.ub[idx] for idx in reorder])
@@ -113,7 +128,7 @@ class PrimalVector(Vector):
         self.init_mult = np.hstack([self.init_mult[idx] for idx in reorder])
         self.res = np.hstack([self.res[idx] for idx in reorder])
         self.mult = np.hstack([self.mult[idx] for idx in reorder])
-
+        return ind_map, rev_ind_map
 
 class ConstraintVector(Vector):
     def __init__(self, symbolic_type=ca.SX):
@@ -140,6 +155,17 @@ class ConstraintVector(Vector):
         indices = range(self.nelem, self.nelem + len(value))
         self.nelem += len(value)
         return indices
+
+    def __copy__(self):
+        result = super().__copy__()
+        result.sym = copy(self.sym)
+        result.lb = copy(self.lb)
+        result.ub = copy(self.ub)
+        result.init_mult = copy(self.init_mult)
+        result.val = copy(self.val)
+        result.mult = copy(self.mult)
+        return result
+
 
     def __str__(self):
         lines = []
@@ -168,13 +194,14 @@ class ConstraintVector(Vector):
                 print(f"{ii}: {self.lb[ii]:.6f}  {self.val[ii]:.6f}  {self.ub[ii]:.6f}")
 
     def resort_vector(self):
-        new_idxlst, reorder = super().resort_vector() # Get new ordering
+        new_idxlst, reorder, ind_map, rev_ind_map = super().resort_vector() # Get new ordering
         self.sym = ca.vertcat(*[self.sym[idx] for idx in reorder])
         self.lb = np.hstack([self.lb[idx] for idx in reorder])
         self.ub = np.hstack([self.ub[idx] for idx in reorder])
         self.init_mult = np.hstack([self.init_mult[idx] for idx in reorder])
         self.val = np.hstack([self.val[idx] for idx in reorder])
         self.mult = np.hstack([self.mult[idx] for idx in reorder])
+        return ind_map, rev_ind_map
 
 class ParameterVector(Vector):
     def __init__(self, symbolic_type=ca.SX):
@@ -192,6 +219,12 @@ class ParameterVector(Vector):
         self.nelem += len(value)
         return indices
 
+    def __copy__(self):
+        result = super().__copy__()
+        result.sym = copy(self.sym)
+        result.val = copy(self.val)
+        return result
+
     def __str__(self):
         lines = []
         max_len = 16 # some minimum length
@@ -207,6 +240,7 @@ class ParameterVector(Vector):
         return ret
 
     def resort_vector(self):
-        new_idxlst, reorder = super().resort_vector() # Get new ordering
+        new_idxlst, reorder, ind_map, rev_ind_map = super().resort_vector() # Get new ordering
         self.sym = ca.vertcat(*[self.sym[idx] for idx in reorder])
         self.val = np.hstack([self.val[idx] for idx in reorder])
+        return ind_map, rev_ind_map
