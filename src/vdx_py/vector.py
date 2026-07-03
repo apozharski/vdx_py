@@ -209,9 +209,4 @@ class ParameterVector(Vector):
     def resort_vector(self):
         new_idxlst, reorder = super().resort_vector() # Get new ordering
         self.sym = ca.vertcat(*[self.sym[idx] for idx in reorder])
-        self.lb = np.hstack([self.lb[idx] for idx in reorder])
-        self.ub = np.hstack([self.ub[idx] for idx in reorder])
-        self.init = np.hstack([self.init[idx] for idx in reorder])
-        self.init_mult = np.hstack([self.init_mult[idx] for idx in reorder])
-        self.res = np.hstack([self.res[idx] for idx in reorder])
-        self.mult = np.hstack([self.mult[idx] for idx in reorder])
+        self.val = np.hstack([self.val[idx] for idx in reorder])
