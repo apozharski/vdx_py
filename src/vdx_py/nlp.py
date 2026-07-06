@@ -37,7 +37,17 @@ class NLP:
         self.g.val = np.squeeze(nlp_results['g'])
         self.g.mult = np.squeeze(nlp_results['lam_g'])
         self.p.mult = np.squeeze(nlp_results['lam_p'])
-        self.f_result = nlp_results['f']
+        self.f_result = float(nlp_results['f'])
+
+        # Calculate violations
+        w_lb_viol = np.maximum(self.w.lb - self.w.res, 0)
+        w_ub_viol = np.maximum(self.w.res - self.w.ub, 0)
+        self.w.violation = np.maximum(w_lb_viol, w_ub_viol)
+        g_lb_viol = np.maximum(self.g.lb - self.g.val, 0)
+        g_ub_viol = np.maximum(self.g.val - self.g.ub, 0)
+        self.g.violation = np.maximum(g_lb_viol, g_ub_viol)
+
+
         return self.solver.stats()
 
     def __str__(self):

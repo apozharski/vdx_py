@@ -71,6 +71,7 @@ class PrimalVector(Vector):
         # Results
         self.res = np.array([])
         self.mult = np.array([])
+        self.violation = np.array([])
 
     def add_var(self, value):
         if not isinstance(value, Primal):
@@ -84,6 +85,7 @@ class PrimalVector(Vector):
         self.init_mult = np.append(self.init_mult, value.init_mult)
         self.res = np.append(self.res, value.init)
         self.mult = np.append(self.mult, value.init_mult)
+        self.violation = np.append(self.violation, np.zeros(len(value)))
         indices = range(self.nelem, self.nelem + len(value))
         self.nelem += len(value)
         return indices
@@ -97,6 +99,7 @@ class PrimalVector(Vector):
         result.init_mult = copy(self.init_mult)
         result.res = copy(self.res)
         result.mult = copy(self.mult)
+        result.violation = copy(self.violation)
         return result
 
     def __str__(self):
@@ -111,11 +114,13 @@ class PrimalVector(Vector):
                           self.init[ii],
                           self.init_mult[ii],
                           self.res[ii],
-                          self.mult[ii]))
+                          self.mult[ii],
+                          self.violation[ii],
+                          ))
 
-        ret = f"|{'sym':{max_len}}|{'lb':12}|{'ub':12}|{'init':12}|{'init_mult':12}|{'res':12}|{'mult':12}|\n"
-        for sym,lb,ub,init,init_mult,res,mult in lines:
-            ret += f"|{sym:{max_len}}|{lb:<12.4g}|{ub:<12.4g}|{init:<12.4g}|{init_mult:<12.4g}|{res:<12.4g}|{mult:<12.4g}|\n"
+        ret = f"|{'sym':{max_len}}|{'lb':12}|{'ub':12}|{'init':12}|{'init_mult':12}|{'res':12}|{'mult':12}|{'violation':12}|\n"
+        for sym,lb,ub,init,init_mult,res,mult,violation in lines:
+            ret += f"|{sym:{max_len}}|{lb:<12.4g}|{ub:<12.4g}|{init:<12.4g}|{init_mult:<12.4g}|{res:<12.4g}|{mult:<12.4g}|{violation:<12.4g}|\n"
 
         return ret
 
@@ -128,6 +133,7 @@ class PrimalVector(Vector):
         self.init_mult = np.hstack([self.init_mult[idx] for idx in reorder])
         self.res = np.hstack([self.res[idx] for idx in reorder])
         self.mult = np.hstack([self.mult[idx] for idx in reorder])
+        self.violation = np.hstack([self.violation[idx] for idx in reorder])
         return ind_map, rev_ind_map
 
 class ConstraintVector(Vector):
@@ -140,6 +146,7 @@ class ConstraintVector(Vector):
         # Results
         self.val = np.array([])
         self.mult = np.array([])
+        self.violation = np.array([])
 
     def add_var(self, value):
         if not isinstance(value, Constraint):
@@ -152,6 +159,7 @@ class ConstraintVector(Vector):
         self.init_mult = np.append(self.init_mult, value.init_mult)
         self.val = np.append(self.mult, 0.0*value.init_mult)
         self.mult = np.append(self.mult, value.init_mult)
+        self.violation = np.append(self.violation, np.zeros(len(value)))
         indices = range(self.nelem, self.nelem + len(value))
         self.nelem += len(value)
         return indices
@@ -164,6 +172,7 @@ class ConstraintVector(Vector):
         result.init_mult = copy(self.init_mult)
         result.val = copy(self.val)
         result.mult = copy(self.mult)
+        result.violation = copy(self.violation)
         return result
 
 
@@ -178,11 +187,13 @@ class ConstraintVector(Vector):
                           self.ub[ii],
                           self.init_mult[ii],
                           self.val[ii],
-                          self.mult[ii]))
+                          self.mult[ii],
+                          self.violation[ii],
+                          ))
 
-        ret = f"|{'sym':{max_len}}|{'lb':12}|{'ub':12}|{'init_mult':12}|{'val':12}|{'mult':12}|\n"
-        for sym,lb,ub,init_mult,res,mult in lines:
-            ret += f"|{sym:{max_len}}|{lb:<12.4g}|{ub:<12.4g}|{init_mult:<12.4g}|{res:<12.4g}|{mult:<12.4g}|\n"
+        ret = f"|{'sym':{max_len}}|{'lb':12}|{'ub':12}|{'init_mult':12}|{'val':12}|{'mult':12}|{'violation':12}|\n"
+        for sym,lb,ub,init_mult,res,mult,violation in lines:
+            ret += f"|{sym:{max_len}}|{lb:<12.4g}|{ub:<12.4g}|{init_mult:<12.4g}|{res:<12.4g}|{mult:<12.4g}|{violation:<12.4g}|\n"
 
         return ret
 
@@ -201,6 +212,7 @@ class ConstraintVector(Vector):
         self.init_mult = np.hstack([self.init_mult[idx] for idx in reorder])
         self.val = np.hstack([self.val[idx] for idx in reorder])
         self.mult = np.hstack([self.mult[idx] for idx in reorder])
+        self.violation = np.hstack([self.violation[idx] for idx in reorder])
         return ind_map, rev_ind_map
 
 class ParameterVector(Vector):
