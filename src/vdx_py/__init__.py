@@ -2,7 +2,7 @@ from casadi import Function
 import casadi
 from .variable import IndexResult
 from .nlp import NLP
-from .vartypes import Primal, Parameter, Constraint
+from .vartypes import Primal, Parameter, Constraint, Relaxation, HardConstraint, Ell1Relaxation, Ell2Relaxation, EllInfRelaxation
 
 # CasADi Patches
 _original_Function_call = Function.call

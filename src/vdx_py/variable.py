@@ -121,8 +121,9 @@ class IndexRange():
 
 class Variable:
     _age = count(0)
-    def __init__(self,vector):
+    def __init__(self,vector,name):
         self.vector = vector
+        self.name = name
         self.ind_map = dict() # tuples to lists of indices
         self.ranges = dict()
         self.age = next(self._age)
@@ -165,19 +166,21 @@ class Variable:
             raise KeyError("Argument to variable index must be a tuple[Iterable], integer, or iterable")
 
         if isinstance(key, int) or key == ():
-            self._add_scalar(key, value)
+            self._add_scalar(key, value, self.name)
         elif all([isinstance(key_i, int) for key_i in key]):
-            self._add_scalar(key, value)
+            self._add_scalar(key, value, self.name)
         else: #Must be a tuple of iterables
             # TODO(@anton) rename Primal and parameter
             key_iters = [k if isinstance(k,Iterable) else [k] for k in key]
             for key_i in product(*key_iters):
-                self._add_scalar(key_i, self._rename_variable(key_i, value))
+                self._add_scalar(key_i, self._rename_variable(key_i, value), self.name)
 
     def _rename_variable(self, key_i, value: Primal|Parameter):
         return replace(value, name=value.name+"_"+"_".join(str(k) for k in key_i))
 
-    def _add_scalar(self, key: int, value):
+    def _add_scalar(self, key: int, value, name):
+        if isinstance(value, Constraint):
+            value = value.relax.relax(key,value,name)
         indices = self.vector.add_var(value)
         self._update_range(key)
         self.ind_map[key] = indices

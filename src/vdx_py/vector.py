@@ -23,7 +23,7 @@ class Vector:
 
     def __getattr__(self, name):
         if name not in self.variables:
-            var = Variable(self)
+            var = Variable(self, name)
             self.variables[name] = var
 
         return self.variables[name]
@@ -41,6 +41,9 @@ class Vector:
         for var in new_variables.values():
             var.vector = result
         return result
+
+    def __contains__(self, name):
+        return name in self.variables
 
     def resort_vector(self):
         idxlst = [((tup,var), varname, ind) for varname,var in self.variables.items() for tup,ind in var.ind_map.items()]
