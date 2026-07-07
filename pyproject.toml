@@ -9,6 +9,7 @@ readme = "README.md"
 version = "0.0.1"
 authors = [
   {name = "Anton E. Pozharskiy", email = "anton.pozharskiy@imtek.uni-freiburg.de"},
+  {name = "Armin Nurkanovic", email = "armin.nurkanovic@imtek.uni-freiburg.de"},
 ]
 maintainers = [
   {name = "Anton E. Pozharskiy", email = "anton.pozharskiy@imtek.uni-freiburg.de"}
