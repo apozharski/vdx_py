@@ -2,7 +2,7 @@
 requires = ["hatchling >= 1.26"]
 build-backend = "hatchling.build"
 [project]
-name = "vdx_py"
+name = "vdx"
 description = "Python package for index tracking in CasADi "
 license = {file = "LICENCE"}
 readme = "README.md"
