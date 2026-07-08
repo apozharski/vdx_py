@@ -20,7 +20,11 @@ class IndexResult:
         self.__initialized = True
 
     def getsym(self):
-        return ca.horzcat(*[self.vector.sym[idx] for idx in self.indices])
+        vec = [self.vector.sym[idx] for idx in self.indices if not self.vector.sym[idx].is_empty()]
+        if vec:
+            return ca.horzcat(*vec)
+        else:
+            return self.vector.symbolic_type([])
 
     def __getattr__(self, name):
         if name == "sym":

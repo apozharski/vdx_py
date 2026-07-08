@@ -24,3 +24,8 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
 ]
+
+[dependency-groups]
+test = ['pytest',
+        'pytest-cov',
+        'parametrized']
