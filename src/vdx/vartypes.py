@@ -48,8 +48,8 @@ class Ell1Relaxation(Relaxation):
 
         new_constr = Constraint(
             ca.vertcat(
-                constr.sym[ind_lb] + slack_lb,
-                constr.sym[ind_ub] - slack_ub,
+                constr.sym[np.where(ind_lb)[0]] + slack_lb,
+                constr.sym[np.where(ind_ub)[0]] - slack_ub,
             ),
             lb=np.hstack([constr.lb[ind_lb], -np.inf*np.ones(sum(ind_ub))]),
             ub=np.hstack([np.inf*np.ones(sum(ind_ub)),constr.ub[ind_ub]]),
@@ -103,10 +103,12 @@ class EllInfRelaxation(Relaxation):
             slack = getattr(self.nlp.w, f"{name}_slack")[()]
             getattr(self.nlp.g, f"{name}_slack_max")[()] = Constraint(ca.vertcat(slack - slack_lb, slack - slack_ub), lb=0.0, ub=np.inf)
             self.nlp.f += rho*slack
+
+        # NOTE(@anton) Yell at Joris and Joel that boolean indexing STILL doesn't work
         new_constr = Constraint(
             ca.vertcat(
-                constr.sym[ind_lb] + slack_lb,
-                constr.sym[ind_ub] - slack_ub,
+                constr.sym[np.where(ind_lb)[0]] + slack_lb,
+                constr.sym[np.where(ind_ub)[0]] - slack_ub,
             ),
             lb=np.hstack([constr.lb[ind_lb], -np.inf*np.ones(sum(ind_ub))]),
             ub=np.hstack([np.inf*np.ones(sum(ind_ub)),constr.ub[ind_ub]]),
