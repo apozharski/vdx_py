@@ -32,11 +32,11 @@ class NLP:
                                  lam_g0=self.g.init_mult,
                                  lam_x0=self.w.init_mult,
                                  p=self.p.val)
-        self.w.res = np.squeeze(nlp_results['x'])
-        self.w.mult = np.squeeze(nlp_results['lam_x'])
-        self.g.val = np.squeeze(nlp_results['g'])
-        self.g.mult = np.squeeze(nlp_results['lam_g'])
-        self.p.mult = np.squeeze(nlp_results['lam_p'])
+        self.w.res = np.squeeze(nlp_results['x'].full())
+        self.w.mult = np.squeeze(nlp_results['lam_x'].full())
+        self.g.val = np.squeeze(nlp_results['g'].full())
+        self.g.mult = np.squeeze(nlp_results['lam_g'].full())
+        self.p.mult = np.squeeze(nlp_results['lam_p'].full())
         self.f_result = float(nlp_results['f'])
 
         # Calculate violations
