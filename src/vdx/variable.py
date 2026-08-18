@@ -36,7 +36,7 @@ class IndexResult:
         if not kwargs:
             return self.vector.sym[self.indices]
         for (name,val) in kwargs.items():
-            if isinstance(val,float):
+            if np.isscalar(val):
                 self.vector.__getattribute__(name)[self.indices] = val
             else:
                 self.vector.__getattribute__(name)[self.indices] = np.reshape(np.array(val), self.vector.__getattribute__(name)[self.indices].shape)
