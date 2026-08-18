@@ -6,7 +6,7 @@ name = "vdx"
 description = "Python package for index tracking in CasADi "
 license = {file = "LICENCE"}
 readme = "README.md"
-version = "0.0.5"
+version = "0.0.6"
 authors = [
   {name = "Anton E. Pozharskiy", email = "anton.pozharskiy@imtek.uni-freiburg.de"},
   {name = "Armin Nurkanovic", email = "armin.nurkanovic@imtek.uni-freiburg.de"},
