@@ -20,9 +20,9 @@ class NLP:
     def create_solver(self, casadi_opts, plugin="ipopt"):
         self.solver = ca.nlpsol(self.name, plugin, self.to_casadi_dict(), casadi_opts);
         
-    def solve(self, casadi_opts=dict()):
+    def solve(self, casadi_opts=dict(), plugin="ipopt"):
         if self.solver is None:
-            self.create_solver(casadi_opts)
+            self.create_solver(casadi_opts, plugin=plugin)
 
         nlp_results = self.solver(x0=self.w.init,
                                  lbx=self.w.lb,
